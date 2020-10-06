@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 class Twig_Extension_Escaper extends Twig_Extension
 {
     protected $defaultStrategy;
@@ -51,24 +50,6 @@ class Twig_Extension_Escaper extends Twig_Extension
     }
 
     /**
-     * Gets the default strategy to use when not defined by the user.
-     *
-     * @param string $filename The template "filename"
-     *
-     * @return string The default strategy to use for the template
-     */
-    public function getDefaultStrategy($filename)
-    {
-        // disable string callables to avoid calling a function named html or js,
-        // or any other upcoming escaping strategy
-        if (!is_string($this->defaultStrategy) && is_callable($this->defaultStrategy)) {
-            return call_user_func($this->defaultStrategy, $filename);
-        }
-
-        return $this->defaultStrategy;
-    }
-
-    /**
      * Sets the default strategy to use when not defined by the user.
      *
      * The strategy can be a valid PHP callback that takes the template
@@ -84,6 +65,24 @@ class Twig_Extension_Escaper extends Twig_Extension
         }
 
         $this->defaultStrategy = $defaultStrategy;
+    }
+
+    /**
+     * Gets the default strategy to use when not defined by the user.
+     *
+     * @param string $filename The template "filename"
+     *
+     * @return string The default strategy to use for the template
+     */
+    public function getDefaultStrategy($filename)
+    {
+        // disable string callables to avoid calling a function named html or js,
+        // or any other upcoming escaping strategy
+        if (!is_string($this->defaultStrategy) && is_callable($this->defaultStrategy)) {
+            return call_user_func($this->defaultStrategy, $filename);
+        }
+
+        return $this->defaultStrategy;
     }
 
     /**

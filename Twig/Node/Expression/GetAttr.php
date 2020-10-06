@@ -9,7 +9,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 class Twig_Node_Expression_GetAttr extends Twig_Node_Expression
 {
     public function __construct(Twig_Node_Expression $node, Twig_Node_Expression $attribute, Twig_Node_Expression_Array $arguments, $type, $lineno)
@@ -41,11 +40,11 @@ class Twig_Node_Expression_GetAttr extends Twig_Node_Expression
             }
 
             if ($this->getAttribute('is_defined_test') || $this->getAttribute('ignore_strict_check')) {
-                $compiler->raw(', ' . ($this->getAttribute('is_defined_test') ? 'true' : 'false'));
+                $compiler->raw(', '.($this->getAttribute('is_defined_test') ? 'true' : 'false'));
             }
 
             if ($this->getAttribute('ignore_strict_check')) {
-                $compiler->raw(', ' . ($this->getAttribute('ignore_strict_check') ? 'true' : 'false'));
+                $compiler->raw(', '.($this->getAttribute('ignore_strict_check') ? 'true' : 'false'));
             }
         }
 

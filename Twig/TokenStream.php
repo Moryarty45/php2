@@ -24,14 +24,14 @@ class Twig_TokenStream
     /**
      * Constructor.
      *
-     * @param array $tokens An array of tokens
+     * @param array  $tokens   An array of tokens
      * @param string $filename The name of the filename which tokens are associated with
      */
     public function __construct(array $tokens, $filename = null)
     {
-        $this->tokens = $tokens;
-        $this->current = 0;
-        $this->filename = $filename;
+        $this->tokens     = $tokens;
+        $this->current    = 0;
+        $this->filename   = $filename;
     }
 
     /**
@@ -50,29 +50,6 @@ class Twig_TokenStream
     }
 
     /**
-     * Tests a token and returns it or throws a syntax error.
-     *
-     * @return Twig_Token
-     */
-    public function expect($type, $value = null, $message = null)
-    {
-        $token = $this->tokens[$this->current];
-        if (!$token->test($type, $value)) {
-            $line = $token->getLine();
-            throw new Twig_Error_Syntax(sprintf('%sUnexpected token "%s" of value "%s" ("%s" expected%s)',
-                $message ? $message . '. ' : '',
-                Twig_Token::typeToEnglish($token->getType(), $line), $token->getValue(),
-                Twig_Token::typeToEnglish($type, $line), $value ? sprintf(' with value "%s"', $value) : ''),
-                $line,
-                $this->filename
-            );
-        }
-        $this->next();
-
-        return $token;
-    }
-
-    /**
      * Sets the pointer to the next token and returns the old one.
      *
      * @return Twig_Token
@@ -84,6 +61,29 @@ class Twig_TokenStream
         }
 
         return $this->tokens[$this->current - 1];
+    }
+
+    /**
+     * Tests a token and returns it or throws a syntax error.
+     *
+     * @return Twig_Token
+     */
+    public function expect($type, $value = null, $message = null)
+    {
+        $token = $this->tokens[$this->current];
+        if (!$token->test($type, $value)) {
+            $line = $token->getLine();
+            throw new Twig_Error_Syntax(sprintf('%sUnexpected token "%s" of value "%s" ("%s" expected%s)',
+                $message ? $message.'. ' : '',
+                Twig_Token::typeToEnglish($token->getType(), $line), $token->getValue(),
+                Twig_Token::typeToEnglish($type, $line), $value ? sprintf(' with value "%s"', $value) : ''),
+                $line,
+                $this->filename
+            );
+        }
+        $this->next();
+
+        return $token;
     }
 
     /**

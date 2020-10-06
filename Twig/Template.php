@@ -38,12 +38,11 @@ abstract class Twig_Template implements Twig_TemplateInterface
     }
 
     /**
-     * This method is only useful when testing Twig. Do not use it.
+     * Returns the template name.
+     *
+     * @return string The template name
      */
-    public static function clearCache()
-    {
-        self::$cache = array();
-    }
+    abstract public function getTemplateName();
 
     /**
      * {@inheritdoc}
@@ -51,54 +50,6 @@ abstract class Twig_Template implements Twig_TemplateInterface
     public function getEnvironment()
     {
         return $this->env;
-    }
-
-    public function isTraitable()
-    {
-        return true;
-    }
-
-    /**
-     * Renders a parent block.
-     *
-     * This method is for internal use only and should never be called
-     * directly.
-     *
-     * @param string $name The block name to render from the parent
-     * @param array $context The context
-     * @param array $blocks The current set of blocks
-     *
-     * @return string The rendered block
-     */
-    public function renderParentBlock($name, array $context, array $blocks = array())
-    {
-        ob_start();
-        $this->displayParentBlock($name, $context, $blocks);
-
-        return ob_get_clean();
-    }
-
-    /**
-     * Displays a parent block.
-     *
-     * This method is for internal use only and should never be called
-     * directly.
-     *
-     * @param string $name The block name to display from the parent
-     * @param array $context The context
-     * @param array $blocks The current set of blocks
-     */
-    public function displayParentBlock($name, array $context, array $blocks = array())
-    {
-        $name = (string)$name;
-
-        if (isset($this->traits[$name])) {
-            $this->traits[$name][0]->displayBlock($name, $context, $blocks);
-        } elseif (false !== $parent = $this->getParent($context)) {
-            $parent->displayBlock($name, $context, $blocks);
-        } else {
-            throw new Twig_Error_Runtime(sprintf('The template has no parent and no traits defining the "%s" block', $name), -1, $this->getTemplateName());
-        }
     }
 
     /**
@@ -134,31 +85,32 @@ abstract class Twig_Template implements Twig_TemplateInterface
         return false;
     }
 
-    /**
-     * Returns the template name.
-     *
-     * @return string The template name
-     */
-    abstract public function getTemplateName();
+    public function isTraitable()
+    {
+        return true;
+    }
 
     /**
-     * Renders a block.
+     * Displays a parent block.
      *
      * This method is for internal use only and should never be called
      * directly.
      *
-     * @param string $name The block name to render
-     * @param array $context The context
-     * @param array $blocks The current set of blocks
-     *
-     * @return string The rendered block
+     * @param string $name    The block name to display from the parent
+     * @param array  $context The context
+     * @param array  $blocks  The current set of blocks
      */
-    public function renderBlock($name, array $context, array $blocks = array())
+    public function displayParentBlock($name, array $context, array $blocks = array())
     {
-        ob_start();
-        $this->displayBlock($name, $context, $blocks);
+        $name = (string) $name;
 
-        return ob_get_clean();
+        if (isset($this->traits[$name])) {
+            $this->traits[$name][0]->displayBlock($name, $context, $blocks);
+        } elseif (false !== $parent = $this->getParent($context)) {
+            $parent->displayBlock($name, $context, $blocks);
+        } else {
+            throw new Twig_Error_Runtime(sprintf('The template has no parent and no traits defining the "%s" block', $name), -1, $this->getTemplateName());
+        }
     }
 
     /**
@@ -167,13 +119,13 @@ abstract class Twig_Template implements Twig_TemplateInterface
      * This method is for internal use only and should never be called
      * directly.
      *
-     * @param string $name The block name to display
-     * @param array $context The context
-     * @param array $blocks The current set of blocks
+     * @param string $name    The block name to display
+     * @param array  $context The context
+     * @param array  $blocks  The current set of blocks
      */
     public function displayBlock($name, array $context, array $blocks = array())
     {
-        $name = (string)$name;
+        $name = (string) $name;
 
         if (isset($blocks[$name])) {
             $b = $blocks;
@@ -184,6 +136,46 @@ abstract class Twig_Template implements Twig_TemplateInterface
         } elseif (false !== $parent = $this->getParent($context)) {
             $parent->displayBlock($name, $context, array_merge($this->blocks, $blocks));
         }
+    }
+
+    /**
+     * Renders a parent block.
+     *
+     * This method is for internal use only and should never be called
+     * directly.
+     *
+     * @param string $name    The block name to render from the parent
+     * @param array  $context The context
+     * @param array  $blocks  The current set of blocks
+     *
+     * @return string The rendered block
+     */
+    public function renderParentBlock($name, array $context, array $blocks = array())
+    {
+        ob_start();
+        $this->displayParentBlock($name, $context, $blocks);
+
+        return ob_get_clean();
+    }
+
+    /**
+     * Renders a block.
+     *
+     * This method is for internal use only and should never be called
+     * directly.
+     *
+     * @param string $name    The block name to render
+     * @param array  $context The context
+     * @param array  $blocks  The current set of blocks
+     *
+     * @return string The rendered block
+     */
+    public function renderBlock($name, array $context, array $blocks = array())
+    {
+        ob_start();
+        $this->displayBlock($name, $context, $blocks);
+
+        return ob_get_clean();
     }
 
     /**
@@ -205,7 +197,7 @@ abstract class Twig_Template implements Twig_TemplateInterface
      */
     public function hasBlock($name)
     {
-        return isset($this->blocks[(string)$name]);
+        return isset($this->blocks[(string) $name]);
     }
 
     /**
@@ -241,6 +233,14 @@ abstract class Twig_Template implements Twig_TemplateInterface
     /**
      * {@inheritdoc}
      */
+    public function display(array $context, array $blocks = array())
+    {
+        $this->displayWithErrorHandling($this->env->mergeGlobals($context), $blocks);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function render(array $context)
     {
         $level = ob_get_level();
@@ -256,14 +256,6 @@ abstract class Twig_Template implements Twig_TemplateInterface
         }
 
         return ob_get_clean();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function display(array $context, array $blocks = array())
-    {
-        $this->displayWithErrorHandling($this->env->mergeGlobals($context), $blocks);
     }
 
     protected function displayWithErrorHandling(array $context, array $blocks = array())
@@ -292,7 +284,7 @@ abstract class Twig_Template implements Twig_TemplateInterface
      * Auto-generated method to display the template with the given context.
      *
      * @param array $context An array of parameters to pass to the template
-     * @param array $blocks An array of blocks to pass to the template
+     * @param array $blocks  An array of blocks to pass to the template
      */
     abstract protected function doDisplay(array $context, array $blocks = array());
 
@@ -307,8 +299,8 @@ abstract class Twig_Template implements Twig_TemplateInterface
      * access for versions of PHP before 5.4. This is not a way to override
      * the way to get a variable value.
      *
-     * @param array $context The context
-     * @param string $item The variable to return from the context
+     * @param array   $context           The context
+     * @param string  $item              The variable to return from the context
      * @param Boolean $ignoreStrictCheck Whether to ignore the strict variable check or not
      *
      * @return The content of the context variable
@@ -331,11 +323,11 @@ abstract class Twig_Template implements Twig_TemplateInterface
     /**
      * Returns the attribute value for a given array/object.
      *
-     * @param mixed $object The object or array from where to get the item
-     * @param mixed $item The item to get from the array or object
-     * @param array $arguments An array of arguments to pass if the item is an object method
-     * @param string $type The type of attribute (@see Twig_TemplateInterface)
-     * @param Boolean $isDefinedTest Whether this is only a defined check
+     * @param mixed   $object            The object or array from where to get the item
+     * @param mixed   $item              The item to get from the array or object
+     * @param array   $arguments         An array of arguments to pass if the item is an object method
+     * @param string  $type              The type of attribute (@see Twig_TemplateInterface)
+     * @param Boolean $isDefinedTest     Whether this is only a defined check
      * @param Boolean $ignoreStrictCheck Whether to ignore the strict attribute check or not
      *
      * @return mixed The attribute value, or a Boolean when $isDefinedTest is true, or null when the attribute is not set and $ignoreStrictCheck is true
@@ -344,7 +336,7 @@ abstract class Twig_Template implements Twig_TemplateInterface
      */
     protected function getAttribute($object, $item, array $arguments = array(), $type = Twig_TemplateInterface::ANY_CALL, $isDefinedTest = false, $ignoreStrictCheck = false)
     {
-        $item = ctype_digit((string)$item) ? (int)$item : (string)$item;
+        $item = ctype_digit((string) $item) ? (int) $item : (string) $item;
 
         // array
         if (Twig_TemplateInterface::METHOD_CALL !== $type) {
@@ -414,10 +406,10 @@ abstract class Twig_Template implements Twig_TemplateInterface
         $lcItem = strtolower($item);
         if (isset(self::$cache[$class]['methods'][$lcItem])) {
             $method = $item;
-        } elseif (isset(self::$cache[$class]['methods']['get' . $lcItem])) {
-            $method = 'get' . $item;
-        } elseif (isset(self::$cache[$class]['methods']['is' . $lcItem])) {
-            $method = 'is' . $item;
+        } elseif (isset(self::$cache[$class]['methods']['get'.$lcItem])) {
+            $method = 'get'.$item;
+        } elseif (isset(self::$cache[$class]['methods']['is'.$lcItem])) {
+            $method = 'is'.$item;
         } elseif (isset(self::$cache[$class]['methods']['__call'])) {
             $method = $item;
         } else {
@@ -449,5 +441,13 @@ abstract class Twig_Template implements Twig_TemplateInterface
         }
 
         return $ret;
+    }
+
+    /**
+     * This method is only useful when testing Twig. Do not use it.
+     */
+    public static function clearCache()
+    {
+        self::$cache = array();
     }
 }

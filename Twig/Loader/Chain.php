@@ -16,8 +16,8 @@
  */
 class Twig_Loader_Chain implements Twig_LoaderInterface, Twig_ExistsLoaderInterface
 {
-    protected $loaders;
     private $hasSourceCache = array();
+    protected $loaders;
 
     /**
      * Constructor.
@@ -69,7 +69,7 @@ class Twig_Loader_Chain implements Twig_LoaderInterface, Twig_ExistsLoaderInterf
      */
     public function exists($name)
     {
-        $name = (string)$name;
+        $name = (string) $name;
 
         if (isset($this->hasSourceCache[$name])) {
             return $this->hasSourceCache[$name];
@@ -105,7 +105,7 @@ class Twig_Loader_Chain implements Twig_LoaderInterface, Twig_ExistsLoaderInterf
             try {
                 return $loader->getCacheKey($name);
             } catch (Twig_Error_Loader $e) {
-                $exceptions[] = get_class($loader) . ': ' . $e->getMessage();
+                $exceptions[] = get_class($loader).': '.$e->getMessage();
             }
         }
 
@@ -126,7 +126,7 @@ class Twig_Loader_Chain implements Twig_LoaderInterface, Twig_ExistsLoaderInterf
             try {
                 return $loader->isFresh($name, $time);
             } catch (Twig_Error_Loader $e) {
-                $exceptions[] = get_class($loader) . ': ' . $e->getMessage();
+                $exceptions[] = get_class($loader).': '.$e->getMessage();
             }
         }
 

@@ -42,10 +42,22 @@ class Twig_Loader_Filesystem implements Twig_LoaderInterface, Twig_ExistsLoaderI
     }
 
     /**
+     * Returns the path namespaces.
+     *
+     * The "__main__" namespace is always defined.
+     *
+     * @return array The array of defined namespaces
+     */
+    public function getNamespaces()
+    {
+        return array_keys($this->paths);
+    }
+
+    /**
      * Sets the paths where templates are stored.
      *
-     * @param string|array $paths A path or an array of paths where to look for templates
-     * @param string $namespace A path namespace
+     * @param string|array $paths     A path or an array of paths where to look for templates
+     * @param string       $namespace A path namespace
      */
     public function setPaths($paths, $namespace = '__main__')
     {
@@ -60,21 +72,9 @@ class Twig_Loader_Filesystem implements Twig_LoaderInterface, Twig_ExistsLoaderI
     }
 
     /**
-     * Returns the path namespaces.
-     *
-     * The "__main__" namespace is always defined.
-     *
-     * @return array The array of defined namespaces
-     */
-    public function getNamespaces()
-    {
-        return array_keys($this->paths);
-    }
-
-    /**
      * Adds a path where templates are stored.
      *
-     * @param string $path A path where to look for templates
+     * @param string $path      A path where to look for templates
      * @param string $namespace A path name
      *
      * @throws Twig_Error_Loader
@@ -94,7 +94,7 @@ class Twig_Loader_Filesystem implements Twig_LoaderInterface, Twig_ExistsLoaderI
     /**
      * Prepends a path where templates are stored.
      *
-     * @param string $path A path where to look for templates
+     * @param string $path      A path where to look for templates
      * @param string $namespace A path name
      *
      * @throws Twig_Error_Loader
@@ -125,9 +125,44 @@ class Twig_Loader_Filesystem implements Twig_LoaderInterface, Twig_ExistsLoaderI
         return file_get_contents($this->findTemplate($name));
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getCacheKey($name)
+    {
+        return $this->findTemplate($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function exists($name)
+    {
+        $name = (string) $name;
+        if (isset($this->cache[$name])) {
+            return true;
+        }
+
+        try {
+            $this->findTemplate($name);
+
+            return true;
+        } catch (Twig_Error_Loader $exception) {
+            return false;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isFresh($name, $time)
+    {
+        return filemtime($this->findTemplate($name)) <= $time;
+    }
+
     protected function findTemplate($name)
     {
-        $name = (string)$name;
+        $name = (string) $name;
 
         // normalize name
         $name = preg_replace('#/{2,}#', '/', strtr($name, '\\', '/'));
@@ -154,8 +189,8 @@ class Twig_Loader_Filesystem implements Twig_LoaderInterface, Twig_ExistsLoaderI
         }
 
         foreach ($this->paths[$namespace] as $path) {
-            if (is_file($path . '/' . $name)) {
-                return $this->cache[$name] = $path . '/' . $name;
+            if (is_file($path.'/'.$name)) {
+                return $this->cache[$name] = $path.'/'.$name;
             }
         }
 
@@ -181,40 +216,5 @@ class Twig_Loader_Filesystem implements Twig_LoaderInterface, Twig_ExistsLoaderI
                 throw new Twig_Error_Loader(sprintf('Looks like you try to load a template outside configured directories (%s).', $name));
             }
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCacheKey($name)
-    {
-        return $this->findTemplate($name);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function exists($name)
-    {
-        $name = (string)$name;
-        if (isset($this->cache[$name])) {
-            return true;
-        }
-
-        try {
-            $this->findTemplate($name);
-
-            return true;
-        } catch (Twig_Error_Loader $exception) {
-            return false;
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isFresh($name, $time)
-    {
-        return filemtime($this->findTemplate($name)) <= $time;
     }
 }

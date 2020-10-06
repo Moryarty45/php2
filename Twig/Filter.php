@@ -26,21 +26,21 @@ abstract class Twig_Filter implements Twig_FilterInterface, Twig_FilterCallableI
     {
         $this->options = array_merge(array(
             'needs_environment' => false,
-            'needs_context' => false,
-            'pre_escape' => null,
-            'preserves_safety' => null,
-            'callable' => null,
+            'needs_context'     => false,
+            'pre_escape'        => null,
+            'preserves_safety'  => null,
+            'callable'          => null,
         ), $options);
-    }
-
-    public function getArguments()
-    {
-        return $this->arguments;
     }
 
     public function setArguments($arguments)
     {
         $this->arguments = $arguments;
+    }
+
+    public function getArguments()
+    {
+        return $this->arguments;
     }
 
     public function needsEnvironment()

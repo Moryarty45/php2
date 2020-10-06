@@ -53,6 +53,11 @@ class Twig_TokenParser_Macro extends Twig_TokenParser
         return null;
     }
 
+    public function decideBlockEnd(Twig_Token $token)
+    {
+        return $token->test('endmacro');
+    }
+
     /**
      * Gets the tag name associated with this token parser.
      *
@@ -61,10 +66,5 @@ class Twig_TokenParser_Macro extends Twig_TokenParser
     public function getTag()
     {
         return 'macro';
-    }
-
-    public function decideBlockEnd(Twig_Token $token)
-    {
-        return $token->test('endmacro');
     }
 }

@@ -30,14 +30,16 @@ class Twig_Node_Macro extends Twig_Node
     {
         $compiler
             ->addDebugInfo($this)
-            ->write(sprintf("public function get%s(", $this->getAttribute('name')));
+            ->write(sprintf("public function get%s(", $this->getAttribute('name')))
+        ;
 
         $count = count($this->getNode('arguments'));
         $pos = 0;
         foreach ($this->getNode('arguments') as $name => $default) {
             $compiler
-                ->raw('$_' . $name . ' = ')
-                ->subcompile($default);
+                ->raw('$_'.$name.' = ')
+                ->subcompile($default)
+            ;
 
             if (++$pos < $count) {
                 $compiler->raw(', ');
@@ -47,26 +49,30 @@ class Twig_Node_Macro extends Twig_Node
         $compiler
             ->raw(")\n")
             ->write("{\n")
-            ->indent();
+            ->indent()
+        ;
 
         if (!count($this->getNode('arguments'))) {
             $compiler->write("\$context = \$this->env->getGlobals();\n\n");
         } else {
             $compiler
                 ->write("\$context = \$this->env->mergeGlobals(array(\n")
-                ->indent();
+                ->indent()
+            ;
 
             foreach ($this->getNode('arguments') as $name => $default) {
                 $compiler
                     ->write('')
                     ->string($name)
-                    ->raw(' => $_' . $name)
-                    ->raw(",\n");
+                    ->raw(' => $_'.$name)
+                    ->raw(",\n")
+                ;
             }
 
             $compiler
                 ->outdent()
-                ->write("));\n\n");
+                ->write("));\n\n")
+            ;
         }
 
         $compiler
@@ -84,6 +90,7 @@ class Twig_Node_Macro extends Twig_Node
             ->write("}\n\n")
             ->write("return ('' === \$tmp = ob_get_clean()) ? '' : new Twig_Markup(\$tmp, \$this->env->getCharset());\n")
             ->outdent()
-            ->write("}\n\n");
+            ->write("}\n\n")
+        ;
     }
 }

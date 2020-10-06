@@ -10,6 +10,38 @@ class Twig_NodeVisitor_SafeAnalysis implements Twig_NodeVisitorInterface
         $this->safeVars = $safeVars;
     }
 
+    public function getSafe(Twig_NodeInterface $node)
+    {
+        $hash = spl_object_hash($node);
+        if (isset($this->data[$hash])) {
+            foreach ($this->data[$hash] as $bucket) {
+                if ($bucket['key'] === $node) {
+                    return $bucket['value'];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected function setSafe(Twig_NodeInterface $node, array $safe)
+    {
+        $hash = spl_object_hash($node);
+        if (isset($this->data[$hash])) {
+            foreach ($this->data[$hash] as &$bucket) {
+                if ($bucket['key'] === $node) {
+                    $bucket['value'] = $safe;
+
+                    return;
+                }
+            }
+        }
+        $this->data[$hash][] = array(
+            'key' => $node,
+            'value' => $safe,
+        );
+    }
+
     public function enterNode(Twig_NodeInterface $node, Twig_Environment $env)
     {
         return $node;
@@ -74,24 +106,6 @@ class Twig_NodeVisitor_SafeAnalysis implements Twig_NodeVisitorInterface
         return $node;
     }
 
-    protected function setSafe(Twig_NodeInterface $node, array $safe)
-    {
-        $hash = spl_object_hash($node);
-        if (isset($this->data[$hash])) {
-            foreach ($this->data[$hash] as &$bucket) {
-                if ($bucket['key'] === $node) {
-                    $bucket['value'] = $safe;
-
-                    return;
-                }
-            }
-        }
-        $this->data[$hash][] = array(
-            'key' => $node,
-            'value' => $safe,
-        );
-    }
-
     protected function intersectSafe(array $a = null, array $b = null)
     {
         if (null === $a || null === $b) {
@@ -107,20 +121,6 @@ class Twig_NodeVisitor_SafeAnalysis implements Twig_NodeVisitorInterface
         }
 
         return array_intersect($a, $b);
-    }
-
-    public function getSafe(Twig_NodeInterface $node)
-    {
-        $hash = spl_object_hash($node);
-        if (isset($this->data[$hash])) {
-            foreach ($this->data[$hash] as $bucket) {
-                if ($bucket['key'] === $node) {
-                    return $bucket['value'];
-                }
-            }
-        }
-
-        return null;
     }
 
     /**

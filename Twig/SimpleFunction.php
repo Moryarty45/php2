@@ -27,10 +27,10 @@ class Twig_SimpleFunction
         $this->callable = $callable;
         $this->options = array_merge(array(
             'needs_environment' => false,
-            'needs_context' => false,
-            'is_safe' => null,
-            'is_safe_callback' => null,
-            'node_class' => 'Twig_Node_Expression_Function',
+            'needs_context'     => false,
+            'is_safe'           => null,
+            'is_safe_callback'  => null,
+            'node_class'        => 'Twig_Node_Expression_Function',
         ), $options);
     }
 
@@ -49,14 +49,14 @@ class Twig_SimpleFunction
         return $this->options['node_class'];
     }
 
-    public function getArguments()
-    {
-        return $this->arguments;
-    }
-
     public function setArguments($arguments)
     {
         $this->arguments = $arguments;
+    }
+
+    public function getArguments()
+    {
+        return $this->arguments;
     }
 
     public function needsEnvironment()

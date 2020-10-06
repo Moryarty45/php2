@@ -27,12 +27,12 @@ class Twig_SimpleFilter
         $this->callable = $callable;
         $this->options = array_merge(array(
             'needs_environment' => false,
-            'needs_context' => false,
-            'is_safe' => null,
-            'is_safe_callback' => null,
-            'pre_escape' => null,
-            'preserves_safety' => null,
-            'node_class' => 'Twig_Node_Expression_Filter',
+            'needs_context'     => false,
+            'is_safe'           => null,
+            'is_safe_callback'  => null,
+            'pre_escape'        => null,
+            'preserves_safety'  => null,
+            'node_class'        => 'Twig_Node_Expression_Filter',
         ), $options);
     }
 
@@ -51,14 +51,14 @@ class Twig_SimpleFilter
         return $this->options['node_class'];
     }
 
-    public function getArguments()
-    {
-        return $this->arguments;
-    }
-
     public function setArguments($arguments)
     {
         $this->arguments = $arguments;
+    }
+
+    public function getArguments()
+    {
+        return $this->arguments;
     }
 
     public function needsEnvironment()

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Autos</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <h2>Список товаров:</h2>
+
+  {% for d in data %}
+    <div class="goods">
+        <h3>{{ d.id }}.&nbsp;{{ d.name }}</h3>
+        <p class="desc">{{ d.description }}</p>
+        <p>Цена: {{ d.price }}</p>
+    </div>
+  {% endfor %}
+  
+  <div class="button"><a href="?limit={{count + 5}}" id="show_more">Показать еще</a><a href="index.php">Скрыть все</a></div>
+
+ 
+
+</body>
+</html>
+  
+
+
+
+   
+ 

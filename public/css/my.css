@@ -1,0 +1,22 @@
+html *
+{
+    font-size: 1em !important;
+    font-family: Arial !important;
+}
+
+h2{
+    color: brown;
+}
+.order{
+    display: flex;
+    width: 600px;
+}
+.item{
+    display: flex;
+}
+button{
+    height: 20px;
+}
+span{
+    color: darkgreen;
+}

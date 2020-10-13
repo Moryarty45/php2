@@ -1,12 +1,13 @@
 {
-  "name": "vendor_name/package_name",
-  "description": "description_text",
-  "minimum-stability": "stable",
-  "license": "proprietary",
-  "authors": [
-    {
-      "name": "author's name",
-      "email": "email@example.com"
+    "require": {
+        "twig/twig": "2.0",
+        "phpunit/phpunit": "^7.5",
+        "ext-json": "*",
+        "ext-pdo": "*"
+    },
+    "autoload": {
+      "psr-4": {
+        "app\\": ""
+      }
     }
-  ]
 }
